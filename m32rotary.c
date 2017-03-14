@@ -33,45 +33,37 @@ void MainInit(void)
 	}
 
 
-void MainScreenUpdate(void)
-{
-
-		//update encoder status on screen
-		if (RotaryGetStatus() ==3)
-		{
-			lcd_gotoxy(0,1);
-			lcd_puts("BUTTON");
-			RotaryResetStatus();	
-		}
-		if (RotaryGetStatus() == 1)
-		{	
-			lcd_gotoxy(0,1);
-			lcd_puts("RIGHT ");
-			RotaryResetStatus();
-		}
-		if (RotaryGetStatus() == 2)
-		{	
-			lcd_gotoxy(0,1);
-			lcd_puts("LEFT  ");
-			RotaryResetStatus();
-		}
-}
-
-
 
 int main(void) {
 	//initialize peripherals
 	MainInit();
 	USART_init();   // Initialize USART
+	int secs = 0; //counter for turns of rotary encoder
 
 
 	//start loop
 	while(1)
 	{
 		//update LCD information on status change
-		MainScreenUpdate();
-	}
+		lcd_gotoxy(0,1); //go to second line
+		switch (RotaryGetStatus())
+		{
+		case 1:
+			lcd_puts("RIGHT ");
+			secs++; //increase seconds counter
+			break;
+		case 2:
+			lcd_puts("LEFT  ");
+			secs--;
+			break;
+		case 3:
+			lcd_puts("BUTTON");
+			break;
+		}
+		RotaryResetStatus(); //reset
+		lcd_gotoxy(9,1); //go to 9th position on second line
+		lcd_puts(itoa(secs,"tmpstr",10)); //output the counter
 	
+	}
+
 }
-
-
